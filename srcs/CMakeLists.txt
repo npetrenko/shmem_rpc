@@ -2,9 +2,6 @@ add_library(shmem_queue shmem_queue.cpp)
 
 add_grpc_library(test_grpc rpc.proto)
 
-add_executable(main main.cpp)
-target_link_libraries(main test_grpc)
-
 add_benchmark(bench bench.cpp)
 target_link_libraries(bench test_grpc shmem_queue)
 
