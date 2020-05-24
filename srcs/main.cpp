@@ -22,7 +22,8 @@
 //             return grpc::Status::OK;
 //         }
 
-//         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "expected \"ping\" as an argument");
+//         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "expected \"ping\" as an
+//         argument");
 //     }
 // };
 

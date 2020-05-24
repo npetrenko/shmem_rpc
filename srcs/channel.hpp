@@ -33,11 +33,10 @@ public:
 
 private:
     struct alignas(128) Block {
-        static constexpr int64_t size = 1024 * 1024; // ~1mb buffer
+        static constexpr int64_t size = 1024 * 1024;  // ~1mb buffer
         char data[size];
     };
 
     std::unique_ptr<Block> block_{new Block{}};
     shmem_queue::Handle handle_{{block_->data, block_->size}};
 };
-

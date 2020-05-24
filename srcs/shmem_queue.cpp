@@ -68,7 +68,8 @@ void WriteHeader(DataChunkHeaderView new_header, MemView* chunk) {
 void AssertCanHoldBlock(MemView block) {
     (void)block;
     assert((size_t)block.begin % alignof(ShmemBlockHeader) == 0);
-    assert(block.size >= static_cast<int64_t>(sizeof(ShmemBlockHeader) + sizeof(DataChunkHeader) + 1));
+    assert(block.size >=
+           static_cast<int64_t>(sizeof(ShmemBlockHeader) + sizeof(DataChunkHeader) + 1));
 }
 
 void AssertHoldsBlock(MemView block) {
@@ -103,15 +104,15 @@ void InitMemRegion(MemView mem) {
     auto* header = new (reinterpret_cast<ShmemBlockHeader*>(init)) ShmemBlockHeader{};
     header->data.begin = mem.begin + sizeof(ShmemBlockHeader);
     header->data.size = (mem.begin + mem.size) - header->data.begin;
-    header->state.store(ShmemBlockHeader::HeaderState::Initialized,
-                              std::memory_order_release);
+    header->state.store(ShmemBlockHeader::HeaderState::Initialized, std::memory_order_release);
 }
 
 void DeinitMemRegion(MemView mem) {
     AssertHoldsBlock(mem);
 
     auto* header = reinterpret_cast<ShmemBlockHeader*>(mem.begin);
-    if (header->state.load(std::memory_order_acquire) != ShmemBlockHeader::HeaderState::Initialized) {
+    if (header->state.load(std::memory_order_acquire) !=
+        ShmemBlockHeader::HeaderState::Initialized) {
         assert(false);
     }
     header->magic_number = -1;
