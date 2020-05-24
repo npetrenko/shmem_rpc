@@ -16,7 +16,7 @@ public:
     }
 
     ~OneWayChannel() {
-        // handle_.Deinitialize();
+        handle_.Deinitialize();
     }
 
     static OneWayChannelRef New() {
