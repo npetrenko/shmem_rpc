@@ -59,7 +59,7 @@ private:
     EchoService::Stub stub_;
 };
 
-void RunServer(grpc::Server** service_store) {
+void RunServer(std::atomic<grpc::Server*>* service_store) {
     std::string server_address("0.0.0.0:50051");
 
     EchoServiceImpl pong;
@@ -69,7 +69,7 @@ void RunServer(grpc::Server** service_store) {
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
     // std::cout << "Server listening on " << server_address << std::endl;
 
-    *service_store = server.get();
+    service_store->store(server.get());
     server->Wait();
 }
 
@@ -81,7 +81,7 @@ void RunBenchmark(benchmark::State& state) {
     std::mt19937 rd{1234};
     const std::string echo_message = RandomString(state.range(0), &rd);
 
-    grpc::Server* server = nullptr;
+    std::atomic<grpc::Server*> server{nullptr};
     std::thread server_thread{[&] { RunServer(&server); }};
     auto client = NewClient();
 
@@ -91,7 +91,9 @@ void RunBenchmark(benchmark::State& state) {
         }
     }
 
-    server->Shutdown();
+    while (!server.load()) {
+    }
+    server.load()->Shutdown();
     server_thread.join();
 }
 
